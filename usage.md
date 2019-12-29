@@ -154,33 +154,35 @@ $ nginx -s reload
 ### 6.配置url地址匹配
 
 ```
-upstream backend {
-	server 192.168.1.114:8080;
-	server 192.168.1.114:8081;
-}
-
-ssl_certificate /path/to/public.crt;
-ssl_certificate_key /path/to/private.key;
-
 # = 开头表示精确匹配
 # ^~ 开头表示uri以某个常规字符串开头，不是正则匹配
 # ~ 开头表示区分大小写的正则匹配;
 # ~* 开头表示不区分大小写的正则匹配
 # / 通用匹配, 如果没有其它匹配,任何请求都会匹配到
 
-location / {
-    try_files $uri $uri/ /index.html;
+upstream backend {
+	server 192.168.1.114:8080;
+	server 192.168.1.114:8081;
 }
 
-location /api {
-  proxy_pass         http://backend;
-  proxy_set_header   X-Forwarded-Proto $scheme;
-  proxy_set_header   Host              $http_host;
-  proxy_set_header   X-Real-IP         $remote_addr;
-  # 外网域名
-  proxy_set_header   X-Forwarded-For   $remote_addr;
-  # 内网域名
-  # proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+server {
+    ssl_certificate     /path/to/public.crt;
+    ssl_certificate_key /path/to/private.key;
+    
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    
+    location /api {
+      proxy_pass         http://backend;
+      proxy_set_header   X-Forwarded-Proto $scheme;
+      proxy_set_header   Host              $http_host;
+      proxy_set_header   X-Real-IP         $remote_addr;
+      # 外网域名
+      proxy_set_header   X-Forwarded-For   $remote_addr;
+      # 内网域名
+      # proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+    }
 }
 ```
 
