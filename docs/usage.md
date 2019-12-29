@@ -94,6 +94,12 @@ $ cp templates/www.example.com.conf actual-hostname.conf
 $ sed -i 's/example.com/actual-hostname/g' actual-hostname.conf
 ```
 
+> eg:
+>> cp templates/www.example.com.conf geercode.com.conf
+>> sed -i 's/example.com/geercode.com/g' geercode.com.conf
+>> nginx -s reload
+>> 记得创建目录 /var/www/www.geercode.com/public/index.html
+
 * Disabling a site
 ```bash
 $ mv actual-hostname.conf .actual-hostname.conf
@@ -118,6 +124,12 @@ $ cp templates/other.example.com.conf other.actual-hostname.conf
 $ sed -i 's/other.example.com/other.actual-hostname/g' other.actual-hostname.conf
 $ nginx -s reload
 ```
+
+> eg:
+>> cp templates/other.example.com.conf test.geercode.com.conf
+>> sed -i 's/other.example.com/test.geercode.com/g' test.geercode.com.conf
+>> nginx -s reload
+>> 记得创建目录 /var/www/test.geercode.com/public/index.html
 
 ### 5.配置url地址匹配
 
