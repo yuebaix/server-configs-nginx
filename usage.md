@@ -12,6 +12,7 @@
 │       ├── example.com.conf
 │       ├── no-ssl.example.com.conf
 │       ├── other.example.com.conf
+│       ├── slb.example.com.conf
 │       └── www.example.com.conf
 ├── h5bp
 │   ├── basic.conf
@@ -87,13 +88,37 @@ conf.d: 域名命名server配置
 域名规范
 外网域名:test.geercode.com
 内网域名:slb-test.geercode.com
+目录规范：
+/var/www/www.geercode.com
+/var/www/test.geercode.com
 ```
 
 ## 三、快速开始
 
 ### 1.编译安装
 
+```
+本文基于deepin安装，属debian系
+
+wget http://nginx.org/download/nginx-1.16.1.tar.gz
+tar xzvf nginx-1.16.1.tar.gz
+cd nginx-1.16.1
+apt install gcc libpcre3 libpcre3-dev zlib1g-dev openssl libssl-dev
+./configure --with-http_ssl_module --with-http_v2_module
+make && make install
+make clean
+ln -s /usr/local/nginx/sbin/nginx /usr/local/sbin/nginx
+```
+
 ### 2.初始配置
+
+```
+cd /usr/local/nginx
+mkdir bak
+cd /usr/local/nginx/conf
+mv ./* ../bak
+git clone https://github.com/geercode/server-configs-nginx.git
+```
 
 ### 3.添加一级域名
 
@@ -172,11 +197,11 @@ server {
     ssl_certificate     /path/to/public.crt;
     ssl_certificate_key /path/to/private.key;
     
-    location / {
+    location /fe {
         try_files $uri $uri/ /index.html;
     }
     
-    location /api {
+    location /be {
       proxy_pass         http://backend;
       proxy_set_header   X-Forwarded-Proto $scheme;
       proxy_set_header   X-Real-IP         $remote_addr;
