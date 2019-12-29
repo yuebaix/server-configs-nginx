@@ -150,6 +150,9 @@ $ cp templates/slb.example.com.conf slb.actual-hostname.conf
 $ sed -i 's/slb.example.com/slb.actual-hostname/g' slb.actual-hostname.conf
 $ nginx -s reload
 ```
+> eg:
+>> cp templates/slb.example.com.conf slb-test.geercode.com.conf
+>> sed -i 's/slb.example.com/slb-test.geercode.com/g' slb-test.geercode.com.conf 
 
 ### 6.配置url地址匹配
 
@@ -176,11 +179,12 @@ server {
     location /api {
       proxy_pass         http://backend;
       proxy_set_header   X-Forwarded-Proto $scheme;
-      proxy_set_header   Host              $http_host;
       proxy_set_header   X-Real-IP         $remote_addr;
       # 外网域名
+      proxy_set_header   Host              $proxy_host;
       proxy_set_header   X-Forwarded-For   $remote_addr;
       # 内网域名
+      # proxy_set_header   Host              $http_host;
       # proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
     }
 }
