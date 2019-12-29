@@ -74,7 +74,6 @@
     ├── default.conf
     ├── no-ssl.default.conf
     ├── geercode.com.conf
-    ├── www.geercode.com.conf
     ├── test.geercode.com.conf
     └── slb-test.geercode.com.conf
 2.多url匹配
