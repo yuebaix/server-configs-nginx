@@ -147,6 +147,12 @@ $ mv actual-hostname.conf .actual-hostname.conf
 $ mv .actual-hostname.conf actual-hostname.conf
 ```
 
+* 测试配置
+```bash
+$ nginx -t
+```
+
+* 重新载入配置
 ```bash
 $ nginx -s reload
 ```
@@ -197,7 +203,7 @@ server {
     ssl_certificate_key /path/to/private.key;
     
     location /fe {
-        try_files $uri $uri/ /index.html;
+        try_files $uri $uri/ /fe/index.html;
     }
     
     location /be {
