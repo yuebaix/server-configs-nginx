@@ -129,13 +129,12 @@ $ cd /etc/nginx/conf.d
 ```bash
 $ cp templates/www.example.com.conf actual-hostname.conf
 $ sed -i 's/example.com/actual-hostname/g' actual-hostname.conf
+eg:
+$ cp templates/www.example.com.conf geercode.com.conf
+$ sed -i 's/example.com/geercode.com/g' geercode.com.conf
+$ nginx -s reload
+记得创建目录 /var/www/www.geercode.com/public/index.html
 ```
-
-> eg:
->> cp templates/www.example.com.conf geercode.com.conf
->> sed -i 's/example.com/geercode.com/g' geercode.com.conf
->> nginx -s reload
->> 记得创建目录 /var/www/www.geercode.com/public/index.html
 
 * 失效
 ```bash
@@ -165,13 +164,12 @@ $ nginx -s reload
 $ cp templates/other.example.com.conf other.actual-hostname.conf
 $ sed -i 's/other.example.com/other.actual-hostname/g' other.actual-hostname.conf
 $ nginx -s reload
+eg:
+$ cp templates/other.example.com.conf test.geercode.com.conf
+$ sed -i 's/other.example.com/test.geercode.com/g' test.geercode.com.conf
+$ nginx -s reload
+记得创建目录 /var/www/test.geercode.com/public/index.html
 ```
-
-> eg:
->> cp templates/other.example.com.conf test.geercode.com.conf
->> sed -i 's/other.example.com/test.geercode.com/g' test.geercode.com.conf
->> nginx -s reload
->> 记得创建目录 /var/www/test.geercode.com/public/index.html
 
 ### 5.添加内网域名
 
@@ -179,20 +177,34 @@ $ nginx -s reload
 $ cp templates/slb.example.com.conf slb.actual-hostname.conf
 $ sed -i 's/slb.example.com/slb.actual-hostname/g' slb.actual-hostname.conf
 $ nginx -s reload
+eg:
+$ cp templates/slb.example.com.conf slb-test.geercode.com.conf
+$ sed -i 's/slb.example.com/slb-test.geercode.com/g' slb-test.geercode.com.conf 
 ```
-> eg:
->> cp templates/slb.example.com.conf slb-test.geercode.com.conf
->> sed -i 's/slb.example.com/slb-test.geercode.com/g' slb-test.geercode.com.conf 
 
 ### 6.配置url地址匹配
 
 ```
-# = 开头表示精确匹配
-# ^~ 开头表示uri以某个常规字符串开头，不是正则匹配
-# ~ 开头表示区分大小写的正则匹配;
-# ~* 开头表示不区分大小写的正则匹配
-# / 通用匹配, 如果没有其它匹配,任何请求都会匹配到
+语法规则：location [=|~|~*|^~]/uri/{...}
+```
 
+* = 开头表示精确匹配
+* ^~ 开头表示uri以某个常规字符串开头，不是正则匹配，理解为匹配url路径即可。nginx不对url做编码，因此请求为/static/20%/aa,可以被规则 ^~ /static/ /aap匹配到（注意是空格）。        <span style="color:blue">以xx开头</span>
+* ~ 开头表示区分大小写的正则匹配。        <span style="color:blue">以xx结尾</span>
+* ~* 开头表示不区分大小写的正则匹配。     <span style="color:blue">以xx结尾</span>
+* !~ 和 !~* 分别为区分大小写不匹配及不区分大小写不匹配的正则
+* / 通用匹配，任何请求都会匹配到
+
+```
+location命中规则:
+1.先进行精准匹配，如果命中立即返回结果并结束解析的过程。
+2.精准匹配未命中判断普通匹配，如果命中多个会记录下"最长的"命中结果，单不会结束解析。
+3.继续判断正则匹配，按照正则匹配设置的规则正则表达式进行匹配，如果又多个正则匹配则由上到下进行匹配，一旦匹配成功一个会立即返回结果并结束解析
+
+ps:普通匹配的前后顺序是无所谓的，因为记录的是最长的结果，而正则匹配是按从上到下匹配的，这个需要注意!!!
+```
+
+```
 upstream backend {
 	server 192.168.1.114:8080;
 	server 192.168.1.114:8081;
@@ -222,7 +234,7 @@ server {
 
 ### 7.示例
 
-> 在仓库 sample 分支可以查看
+> 在仓库 [sample](https://github.com/geercode/server-configs-nginx/tree/sample) 分支可以查看
 
 ## 四、自动化
 
